@@ -123,7 +123,7 @@ int main(){
         return 1;
     }
 
-    FILE *arq_log= fopen("74181.log", "w");
+    FILE *arq_log= fopen("74181.log", "a+");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
@@ -142,7 +142,7 @@ int main(){
     struct tm *tm = localtime(&t2);
     char s[64];
     strftime(s, sizeof(s), "%d/%m/%Y %X", tm);
-    fprintf(arq_log, "%s", s);
+    fprintf(arq_log, "%s\n", s);
 
     if(arq){
         cout<<"\tLendo arquivo...\n";
@@ -165,13 +165,13 @@ int main(){
         }
     }
 
-    fprintf(arq_log, "Linhas .alu: %i linhas .hex: %i \n", line_alu, line_hex);
-    fprintf(arq_log, "Atribuicoes feitas em A: %i, atribuicoes feitas em B: %i \n", atri_a, atri_b);
+    fprintf(arq_log, "Linhas .alu: %i linhas .hex: %i\n", line_alu, line_hex);
+    fprintf(arq_log, "Atribuicoes feitas em A: %i, atribuicoes feitas em B: %i\n", atri_a, atri_b);
     fprintf(arq_log, "Instrucoes (C): %i\n", ins_c);
 
     t = clock() - t;
     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    fprintf(arq_log, "%f segundos para executar \n", time_taken);
+    fprintf(arq_log, "%f segundos para executar \n\n", time_taken);
 
     fclose(arq);
     fclose(arq_hex);

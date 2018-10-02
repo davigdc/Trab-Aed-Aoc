@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1538448666 source:c:\users\davig\desktop\converthex\main.cpp
+1538483702 source:c:\users\davig\desktop\converthex\main.cpp
 	<iostream>
 	<stdio.h>
 	<stdlib.h>
@@ -7,6 +7,7 @@
 	<locale.h>
 	<windows.h>
 	<conio.h>
+	<time.h>
 
 1538453940 source:c:\users\juanl\documents\dev\trab-aed-aoc\main.cpp
 	<iostream>
