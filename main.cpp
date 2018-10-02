@@ -79,7 +79,7 @@ char hexCode(char code[]) {
 }
 
 
-void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao){
+void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao, int &atri_a, int &b_int, int &ins_c){
 
     bool Mnemonico=true;
 
@@ -88,14 +88,17 @@ void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao){
         Mnemonico = false;
             if(v[i-1] == 'A'){
                a=v[i+1];
+               atri_a++;
             }
             if(v[i-1] == 'B'){
                 b=v[i+1];
+                b_int++;
             }
         }
 
         if(Mnemonico){
             c=hexCode(v);
+            ins_c++;
             atribuicao= true;
         }
     }
@@ -118,7 +121,7 @@ FILE *arq_hex= fopen("74181.hex", "w+");
         return 1;
     }
 
-FILE *arq_log= fopen("log.txt", "w");
+FILE *arq_log= fopen("74181.log", "w");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
@@ -128,31 +131,32 @@ FILE *arq_log= fopen("log.txt", "w");
 char linha[5];
 char a, b, c;
 bool atribuicao;
+int line_alu=0,line_hex=0, atri_a=0, atri_b=0, ins_c=0;
 
 if(arq){
     cout<<"\tLendo arquivo...\n";
-        while(!feof(arq)){
-                if(!feof(arq)){
-                    fscanf(arq, "%[^\n]\n", linha);
-                        //printf("%s\n", linha);
-                            if(!strcmp("inicio:", linha) || !strcmp("fim.", linha)){
-                                cout<<endl<<"Inicio ou fim do arquivo";
-
-                            } else {
-                                atribuicao= false;
-                                Define_Valores(linha, a, b, c, atribuicao);
-
-                                    if(atribuicao){
-                                        printf("\nValores: %c%c%c", a, b, c);
-                                        fprintf(arq_hex, "%c%c%c\n", a, b, c);
-
-                                    }
-                                //printf("%s\n", linha);
-                            }
-                }
-        }
+    while(!feof(arq)){
+            if(!feof(arq)){
+            line_alu++;
+                fscanf(arq, "%[^\n]\n", linha);
+                        if(!strcmp("inicio:", linha) || !strcmp("fim.", linha)){
+                            //cout<<endl<<"Inicio ou fim do arquivo";
+                        } else {
+                            atribuicao= false;
+                            Define_Valores(linha, a, b, c, atribuicao, atri_a, atri_b, ins_c);
+                                if(atribuicao){
+                                    //printf("\nValores: %c%c%c", a, b, c);
+                                    fprintf(arq_hex, "%c%c%c\n", a, b, c);
+                                    line_hex++;
+                                }
+                        }
+            }
+    }
 }
 
+cout<<endl<<"Linhas .alu: "<<line_alu<<", linhas .hex: "<<line_hex<<endl;
+cout<<"Atribuicoes feitas em A: "<<atri_a<<", atribuicoes feitas em B: "<<atri_b<<endl;
+cout<<"Instrucoes (C): "<<ins_c<<endl;
 
 fclose(arq);
 fclose(arq_hex);
