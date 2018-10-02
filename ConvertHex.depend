@@ -8,3 +8,12 @@
 	<windows.h>
 	<conio.h>
 
+1538449336 source:c:\users\juanl\documents\dev\trab-aed-aoc\main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	<windows.h>
+	<conio.h>
+

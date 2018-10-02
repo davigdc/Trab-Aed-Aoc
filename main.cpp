@@ -82,7 +82,7 @@ char hexCode(char code[]) {
 void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao, int &atri_a, int &b_int, int &ins_c){
 
     bool Mnemonico=true;
-
+    int aux = 0;
     for(int i = 1; i < 8; i++){
         if(v[i] == '='){    // Valor de A e B
         Mnemonico = false;
@@ -97,70 +97,71 @@ void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao, int &a
         }
 
         if(Mnemonico){
+            aux = 1;
             c=hexCode(v);
-            ins_c++;
             atribuicao= true;
         }
     }
+    ins_c += aux;
 }
 
 
 int main(){
 
-FILE *arq= fopen("74181.alu", "r");
+    FILE *arq= fopen("74181.alu", "r");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
         return 1;
     }
 
-FILE *arq_hex= fopen("74181.hex", "w+");
+    FILE *arq_hex= fopen("74181.hex", "w+");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
         return 1;
     }
 
-FILE *arq_log= fopen("74181.log", "w");
+    FILE *arq_log= fopen("74181.log", "w");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
         return 1;
     }
 
-char linha[5];
-char a, b, c;
-bool atribuicao;
-int line_alu=0,line_hex=0, atri_a=0, atri_b=0, ins_c=0;
+    char linha[5];
+    char a, b, c;
+    bool atribuicao;
+    int line_alu=0,line_hex=0, atri_a=0, atri_b=0, ins_c=0;
 
-if(arq){
-    cout<<"\tLendo arquivo...\n";
-    while(!feof(arq)){
+    if(arq){
+        cout<<"\tLendo arquivo...\n";
+        while(!feof(arq)){
             if(!feof(arq)){
-            line_alu++;
+                line_alu++;
                 fscanf(arq, "%[^\n]\n", linha);
-                        if(!strcmp("inicio:", linha) || !strcmp("fim.", linha)){
-                            //cout<<endl<<"Inicio ou fim do arquivo";
-                        } else {
-                            atribuicao= false;
-                            Define_Valores(linha, a, b, c, atribuicao, atri_a, atri_b, ins_c);
-                                if(atribuicao){
-                                    //printf("\nValores: %c%c%c", a, b, c);
-                                    fprintf(arq_hex, "%c%c%c\n", a, b, c);
-                                    line_hex++;
-                                }
-                        }
+                if(!strcmp("inicio:", linha) || !strcmp("fim.", linha)){
+                    //cout<<endl<<"Inicio ou fim do arquivo";
+                } else {
+                    atribuicao= false;
+                    Define_Valores(linha, a, b, c, atribuicao, atri_a, atri_b, ins_c);
+                    if(atribuicao){
+                        //printf("\nValores: %c%c%c", a, b, c);
+                        fprintf(arq_hex, "%c%c%c\n", a, b, c);
+                        line_hex++;
+                    }
+                }
             }
+        }
     }
-}
 
-cout<<endl<<"Linhas .alu: "<<line_alu<<", linhas .hex: "<<line_hex<<endl;
-cout<<"Atribuicoes feitas em A: "<<atri_a<<", atribuicoes feitas em B: "<<atri_b<<endl;
-cout<<"Instrucoes (C): "<<ins_c<<endl;
+    cout<<endl<<"Linhas .alu: "<<line_alu<<", linhas .hex: "<<line_hex<<endl;
+    cout<<"Atribuicoes feitas em A: "<<atri_a<<", atribuicoes feitas em B: "<<atri_b<<endl;
+    cout<<"Instrucoes (C): "<<ins_c<<endl;
 
-fclose(arq);
-fclose(arq_hex);
-fclose(arq_log);
+    fclose(arq);
+    fclose(arq_hex);
+    fclose(arq_log);
 
-return 0;
+    return 0;
 }
