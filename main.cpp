@@ -219,32 +219,24 @@ int main(){
     cout<<"\nInsira a porta COM: ";
     cin>>porta;
 
-    while(!feof(hex)){//Envia as informações para o arduino até o arquivo atingir seu fim
+    while(!feof(hex)){  //Envia as informações para o arduino até o arquivo atingir seu fim
         do{
             cout<<"Tecle enter para alterar o estado do sinal"<<endl;
             tecla = getch();
-            if (tecla == -32)
-                tecla = getch();
             if (tecla==13){
-                cout<<"tecla digitada = enter"<<endl;
-
                 fscanf(hex,"%s",comando);
                 line = "envia.exe ";
-
                 line = line + porta + " " + comando;
                 manda = new char[line.length()+1];
                 memcpy(manda, line.c_str(), line.length() + 1);
 
                 cout<<"Manda para o CMD: "<<line<<endl<<endl;
-                //system(manda);
-                //system("pause");
-            } else{
-                cout<<"Tecla invalida"<<endl;
+                system(manda);
+                system("pause");
             }
         }while(tecla==13 && !feof(hex));
     }
 
     fclose(hex);
-
     return 0;
 }
