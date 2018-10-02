@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1538443647 source:c:\users\davig\desktop\converthex\main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<locale.h>
+	<windows.h>
+	<conio.h>
+
