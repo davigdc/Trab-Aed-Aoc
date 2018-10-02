@@ -7,7 +7,29 @@
 #include <conio.h>
 #include <time.h>
 
+double PCFreq = 0.0;
+__int64 CounterStart = 0;
+
 using namespace std;
+
+void StartCounter(){
+
+    LARGE_INTEGER li;
+    if(!QueryPerformanceFrequency(&li))
+        printf("QueryPerformanceFrequency Failed.\n");
+    PCFreq = (double)(li.QuadPart) / 1000.0;
+    QueryPerformanceCounter(&li);
+    CounterStart = li.QuadPart;
+}
+
+
+double GetCounter(){
+
+    LARGE_INTEGER li;
+    QueryPerformanceCounter(&li);
+    return (double)(li.QuadPart - CounterStart) / PCFreq;
+}
+
 
 char hexCode(char code[]) {
 
@@ -109,6 +131,11 @@ void Define_Valores(char *v, char &a, char &b, char &c, bool &atribuicao, int &a
 
 int main(){
 
+    double tempoLeitura = 0.0000000;
+    double tempoTraducao = 0.0000000;
+    double tempoGravacao = 0.0000000;
+    StartCounter();
+
     FILE *arq= fopen("74181.alu", "r");
     if(arq==NULL) //Verifica se o arquivo é nulo
     {
@@ -117,21 +144,18 @@ int main(){
     }
 
     FILE *arq_hex= fopen("74181.hex", "w+");
-    if(arq==NULL) //Verifica se o arquivo é nulo
+    if(arq_hex==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
         return 1;
     }
 
     FILE *arq_log= fopen("74181.log", "a+");
-    if(arq==NULL) //Verifica se o arquivo é nulo
+    if(arq_log==NULL) //Verifica se o arquivo é nulo
     {
         printf("\nErro ao abrir arquivo .alu\n");
         return 1;
     }
-
-    clock_t t;
-    t = clock();
 
     char linha[5];
     char a, b, c;
@@ -145,9 +169,11 @@ int main(){
     fprintf(arq_log, "%s\n", s);
 
     if(arq){
+        tempoLeitura = GetCounter();
         cout<<"\tLendo arquivo...\n";
         while(!feof(arq)){
             if(!feof(arq)){
+                StartCounter();
                 line_alu++;
                 fscanf(arq, "%[^\n]\n", linha);
                 if(!strcmp("inicio:", linha) || !strcmp("fim.", linha)){
@@ -155,12 +181,15 @@ int main(){
                 } else {
                     atribuicao= false;
                     Define_Valores(linha, a, b, c, atribuicao, atri_a, atri_b, ins_c);
+                    tempoTraducao += GetCounter();
                     if(atribuicao){
                         //printf("\nValores: %c%c%c", a, b, c);
                         fprintf(arq_hex, "%c%c%c\n", a, b, c);
                         line_hex++;
+                        tempoGravacao += GetCounter();
                     }
                 }
+            tempoLeitura += GetCounter();
             }
         }
     }
@@ -168,14 +197,54 @@ int main(){
     fprintf(arq_log, "Linhas .alu: %i linhas .hex: %i\n", line_alu, line_hex);
     fprintf(arq_log, "Atribuicoes feitas em A: %i, atribuicoes feitas em B: %i\n", atri_a, atri_b);
     fprintf(arq_log, "Instrucoes (C): %i\n", ins_c);
-
-    t = clock() - t;
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    fprintf(arq_log, "%f segundos para executar \n\n", time_taken);
+    fprintf(arq_log, "Tempo para realizar a leitura de '74181.alu' : %lf (Milissegundos)\n", tempoLeitura);
+    fprintf(arq_log, "Tempo para realizar a traducao de '74181.alu' : %lf (Milissegundos)\n", tempoTraducao);
+    fprintf(arq_log, "Tempo para realizar a gravacao em '74181.hex' : %lf (Milissegundos)\n\n", tempoGravacao);
 
     fclose(arq);
     fclose(arq_hex);
     fclose(arq_log);
+
+    string porta, line;
+    char *manda, comando[4];
+    int tecla;
+
+    FILE *hex=fopen("74181.hex", "r");
+    if(hex==NULL) //Verifica se o arquivo é nulo
+    {
+        printf("\nErro ao abrir arquivo .alu\n");
+        return 1;
+    }
+
+    cout<<"\nInsira a porta COM: ";
+    cin>>porta;
+
+    while(!feof(hex)){//Envia as informações para o arduino até o arquivo atingir seu fim
+        do{
+            cout<<"Tecle enter para alterar o estado do sinal"<<endl;
+            tecla = getch();
+            if (tecla == -32)
+                tecla = getch();
+            if (tecla==13){
+                cout<<"tecla digitada = enter"<<endl;
+
+                fscanf(hex,"%s",comando);
+                line = "envia.exe ";
+
+                line = line + porta + " " + comando;
+                manda = new char[line.length()+1];
+                memcpy(manda, line.c_str(), line.length() + 1);
+
+                cout<<"Manda para o CMD: "<<line<<endl<<endl;
+                //system(manda);
+                //system("pause");
+            } else{
+                cout<<"Tecla invalida"<<endl;
+            }
+        }while(tecla==13 && !feof(hex));
+    }
+
+    fclose(hex);
 
     return 0;
 }
