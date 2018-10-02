@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <windows.h>
 #include <conio.h>
+#include <time.h>
 
 using namespace std;
 
@@ -129,10 +130,19 @@ int main(){
         return 1;
     }
 
+    clock_t t;
+    t = clock();
+
     char linha[5];
     char a, b, c;
     bool atribuicao;
     int line_alu=0,line_hex=0, atri_a=0, atri_b=0, ins_c=0;
+
+    time_t t2 = time(NULL);
+    struct tm *tm = localtime(&t2);
+    char s[64];
+    strftime(s, sizeof(s), "%d/%m/%Y %X", tm);
+    fprintf(arq_log, "%s", s);
 
     if(arq){
         cout<<"\tLendo arquivo...\n";
@@ -155,9 +165,13 @@ int main(){
         }
     }
 
-    cout<<endl<<"Linhas .alu: "<<line_alu<<", linhas .hex: "<<line_hex<<endl;
-    cout<<"Atribuicoes feitas em A: "<<atri_a<<", atribuicoes feitas em B: "<<atri_b<<endl;
-    cout<<"Instrucoes (C): "<<ins_c<<endl;
+    fprintf(arq_log, "Linhas .alu: %i linhas .hex: %i \n", line_alu, line_hex);
+    fprintf(arq_log, "Atribuicoes feitas em A: %i, atribuicoes feitas em B: %i \n", atri_a, atri_b);
+    fprintf(arq_log, "Instrucoes (C): %i\n", ins_c);
+
+    t = clock() - t;
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    fprintf(arq_log, "%f segundos para executar \n", time_taken);
 
     fclose(arq);
     fclose(arq_hex);

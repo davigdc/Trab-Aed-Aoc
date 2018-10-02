@@ -8,7 +8,7 @@
 	<windows.h>
 	<conio.h>
 
-1538449336 source:c:\users\juanl\documents\dev\trab-aed-aoc\main.cpp
+1538453940 source:c:\users\juanl\documents\dev\trab-aed-aoc\main.cpp
 	<iostream>
 	<stdio.h>
 	<stdlib.h>
@@ -16,4 +16,5 @@
 	<locale.h>
 	<windows.h>
 	<conio.h>
+	<time.h>
 
